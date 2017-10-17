@@ -1,0 +1,10 @@
+
+
+-----------
+# Instructions
+
+1.- Upload pdf versions of documents/articles to mine in the Upload Literature Tab.
+
+2.- Under the Mine Biodiversity Observations tab, mine especific biodiversity data associated to: **scientific names**, **biodiversity events** or **geographical locations**.
+
+3.- Make mined data available to others through ZENODO, GitHub or other data repositories.
