@@ -16,7 +16,7 @@ https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/  (free)
  
  4.- Run the app through RStudio with the RunApp button. 
  
- Alternatively, you can run the 'shiny::runGitHub()' function. Function 'arguments (repo= "BiodiversityObservationsMiner", username= "fgabriel1891")'.
+ Alternatively, you can run the `shiny::runGitHub()` function. Function arguments: `repo= "BiodiversityObservationsMiner", username= "fgabriel1891"`.
  
 
 #### Consider this before using the app in the server or locally
