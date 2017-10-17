@@ -2,11 +2,11 @@
 
 This shiny app allows mining biodiversity data from Literature
 
-# To use it from the shiny server: 
+### To use it from the shiny server: 
 
 https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/  (free)
 
-# To run locally in your computer:  
+### To run locally in your computer:  
  
  1.- Clone or download the repository to a directory on your computer
  
@@ -19,10 +19,11 @@ https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/  (free)
  Alternatively, you can run the shiny::runGitHub() function. Function arguments (repo= "BiodiversityObservationsMiner", username= "fgabriel1891".
  
 
-## Consider this before using the app in the server or locally
+#### Consider this before using the app in the server or locally
 
 For the moment I have a Starter Shiny server account. This limits the app to a couple of running hours / users per month. Until (if) I get financing to run the app in a [pro.server](http://www.shinyapps.io/)  please only use the server as a test of the app functionalities. If you want to use/mine larger portions of literature please run the app locally at your computer. 
 
-I open to get in touch for development / financing ideas for this app. 
+I am open to get in touch for development / financing ideas for this app. 
 
+--------
 For comments, suggestions and bugs please open an [issue](https://github.com/fgabriel1891/BiodiversityObservationsMiner/issues/new)
