@@ -2,13 +2,18 @@
 
 This shiny app allows mining biodiversity data from Literature
 
-# To use it from the shiny server: https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/  (free)
+# To use it from the shiny server: 
+
+https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/  (free)
 
 # To run locally in your computer:  
  
  1.- Clone or download the repository to a directory on your computer
+ 
  2.- Open the R Project container file
+ 
  3.- Make sure you have all R packages installed and updated to run the app (see About) 
+ 
  4.- Run the app through RStudio with the RunApp button. 
  
  Alternatively, you can run the shiny::runGitHub() function. Function arguments (repo= "BiodiversityObservationsMiner", username= "fgabriel1891".
