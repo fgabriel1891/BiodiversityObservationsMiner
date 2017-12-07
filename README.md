@@ -31,3 +31,14 @@ I am open to get in touch for development / financing ideas for this app.
 
 --------
 For comments, suggestions and bugs please open an [issue](https://github.com/fgabriel1891/BiodiversityObservationsMiner/issues/new)
+
+
+### Required packages to fuction (if you run locally) 
+
+shinythemes
+DT
+stringi
+stringr
+wordcloud
+taxize
+fulltext
