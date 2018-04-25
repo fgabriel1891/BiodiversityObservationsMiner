@@ -7,14 +7,15 @@
 # #
 # 
 library(shiny)
-library(monkeylearn)
-library(shinythemes)
 library(DT)
 library(stringi)
-library(wordcloud)
 library(taxize)
 library(fulltext)
 library(tm)
+library(tidyverse)
+library(tidytext)
+library(tibble)
+library(widyr)
 #library(RWeka)
 
 
@@ -24,292 +25,77 @@ library(tm)
 options(shiny.maxRequestSize=30*1024^2)
 shinyServer(function(input, output, session) {
   
-  
-  
-  # Define functions: 
-  #
-  # Custom function to retrieve dictionary matches
-  #
-  termcount <- function(dictionary, text){
-    
-    count <-c()
-    for (i in 1:length(unlist(dictionary))){
-      count$term[i] <- dictionary[i,]
-      count$count[i] <- length(grep(dictionary[i,], text))
-    }
-    
-    b <- data.frame(count)
-    return(b[order(b$count, decreasing = T),]
-    )
-  }
-  
-  # Function to create a cropus from the indexed snippets
-  
-  wordcloudChunk <- function( chunks){ 
-    
-    
-    BigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 2, max = 2)) # from https://rstudio-pubs-static.s3.amazonaws.com/118348_a00ba585d2314b3c937d6acd4f4698b0.html
-    corpus <- tm::Corpus(tm::VectorSource(chunks))
-    corpus <- tm::tm_map(corpus, removeWords, stopwords('english'))
-    
-    #dtm <- TermDocumentMatrix(corpus, control = list(tokenize = BigramTokenizer))
-    #freq <- sort(rowSums(as.matrix(dtm)),decreasing = TRUE)
-    #freq <- data.frame("terms"=names(freq), "freq"=freq)
-    return(corpus)
-  }
-  
-  
-  #
-  # Custom function to index
-  #
-  
-  #return( print(IndexText[which(matches[[i]] == TRUE)]))
-  # 
-  # test <- scrapenames(file = "www/Frugivory and seed dispersal by tapirs: an insight on their ecological role .pdf", return_content = T)
-  # txt <- test$meta$content
-  # vr <- test$data
-  # Index(txt,vr, dictionary)
-  
-  Index <- function(read,verbatim, dictionary) {
-    
-    IndexText <- list()
-    for(i in 1:length(verbatim$offsetend)){
-      IndexText[i] <- stringr::str_sub(read,
-                                       verbatim$offsetstart[i]-100,
-                                       verbatim$offsetend[i]+150)
-      
-    print("here2")
-    }
-    matches <- c()
-    ToMatch <- c()
-    for ( i in 1:length(IndexText)){
-      matches[[i]] <- grepl(paste(dictionary[,1], collapse = "|"),IndexText[i])
-    }
-    print("here3")
-    df <- c()
-    df$text <- unlist(IndexText[matches==TRUE])
-    df$where <- verbatim$offsetstart[which(matches == TRUE)]
-    
-    
-    return(df)
-  }
-  
-  # Function to index the ocr text and give context. 
-  
-  giveContext <- function(text,terms, up, down) {
-    indx <- unlist(gregexpr(terms, text))
-    cont = sapply(indx, function(x) stringr::str_sub(text, x-up,x+down))
-    names(cont) <- names(text) 
-    return(cont)}
-  
-  
-  
-  # Function to split text based on positions                    
-  splitAt <- function(x, pos){ unname(split(x, cumsum(seq_along(x) %in% pos)))} # from:https://stackoverflow.com/questions/16357962/r-split-numeric-vector-at-position
-  
-  # Get Scientific and family names function
-  
-  getSnames <- function(path, jSciNames = F, taxLevel, database){
-    
-    print("initiated")
-    # Initiate progress bar
-    withProgress( value = 0.1 , message = "Scrapping Scientific Names", { 
-      # Set an apply function to extract the scientific names of the articles uploaded. 
-      scrapeRes <- lapply(path, function(x) tryCatch({scrapenames(file = x, return_content = T)}, error = function(e) NULL ))
-      file <- input$file1
-      content <- lapply(scrapeRes, function(x) x$meta$content) # return the text content
-      names(content) <- file$name
-      
-      verbatim <- lapply(scrapeRes, function(x) x$data) # return the scientific names found 
-      names(verbatim) <- file$name # give proper names
-      namew <- lapply(verbatim, function(x) unique(x$scientificname)) # list scientific names 
-      namew <- reshape2::melt(namew) # arrage dataset with file
-      names(namew) <- c("species", "file") # give proper names
-      ret <- list()
-      ret$content <- content
-      ret$verbatim <- verbatim
-      ret$file <- file$name
-      ret$namew <- namew
-      
-      if (jSciNames == T) { 
-        incProgress(amount = 0.9, message = "Done!")}
-      
-      else  {  
-        # Create unique pool of names to identify (Save computation time)
-        spfound <- unique(namew$species)
-      #incProgress(amount = 0.4, message = "Done!" )
-      incProgress(amount = 0.2,
-                  message = "Finding taxonomic 
-                  ontologies of scientific names found" ) # update progress bar
-     
-      # Identify family and class names
-      families <- taxize::tax_name(spfound, get = taxLevel, 
-                                   db = database, verbose = F,
-                                   ask = F) # Look for families
-      families <- cbind(spfound, families)
-      out <- c("query","db")
-      families2 <- families[,!(names(families) %in% out)]
-      ret$namew <-NULL
-      ret$namew <- families2
-      incProgress(amount = 0.5, message = "Done!")
-      
-      ret$families <- families}
-      
-      
-      return(ret)
-    }) 
-  } 
-  
-  #getSnames(path = "www/eiserhardt2011.pdf")
-  #sasa <- getSnames(c("02 David, Manakadan & Ganesh.pdf","1-s2.0-S037663571500056X-main.pdf"))
-  
-  # Custom function to scrapenames, OCR the pdf and return a list of taxonomic entities found (including its identification at family and class) 
-  # along with a list of "snippets" of the text of ~600 long that matches both the dictionary terms and the target species of the search. 
-  # Requires: a dictionary, a filter and the path where the article (pdf) is stored. This function calls the "Index" function and passes the arguments
-  # dictionary and verbatim = list of scientific names found with the taxize::scrapenames function.  
-  
-  readtext <- function(text, dictionary,verbatim, up, down){
-    readed <- Index(text, verbatim, dictionary)
-    # Create chunks to summarize text output
-    nam <- readed$where
-    ww <- lapply(data.frame(nam), diff) # Calculate differences between matches
-    bp <- as.numeric(which(unlist(ww) > 250)) # Select breakpoints based on a difference threshold (large of snippets)
-    # create chunks 
-    lmis <- splitAt(nam,bp+1)
-    # Set limits
-    lims <- lapply(lmis, function(x) c(min(x)-down, max(x)+up))
-    # retrieve text
-    chunks <- lapply(lims, function(x) stringr::str_sub(text, x[1],x[2]))
-    # create a return object 
-    retorne <- list()
-    retorne$dic <- dictionary
-    retorne$where <- nam
-    retorne$chunks <- unlist(chunks)
-    return(retorne) 
-  }
-  
-  
-  
-  
-  # Function to get frequency counts of scientific names found 
-  
-  getFrecuencyNames <-  function(namelist){ 
-    sciname <- namelist
-    splist <- table(sciname$species)[order(table(sciname$species), decreasing = T)]
-    splist <- data.frame(splist)
-    names(splist) <- c("species", "count")
-    splist$family <- namelist$family[match(splist$species, namelist$species)]
-    splist$class <- namelist$class[match(splist$species, namelist$species)]
-    return(splist)
-  }
-  
-  # Scrape locations with monkeylearn 
-  
-  locScrap <- function(article, key){
-    print("starting")
-    withProgress( value = 0.5 , message = "Scrapping Locations", { 
-      scrap <- list()        
-      scrap <- monkeylearn::monkeylearn_extract(article,
-                                                extractor_id = "ex_isnnZRbS", 
-                                                key=key, verbose = T)
-      print(scrap)
-      locs <- scrap$found[scrap$found$tag == "LOCATION"]
-      return(scrap)})
-   
-  }
-  
-  # Get the Key imput 
-  
-  key <- eventReactive(input$submit,{ 
-      df <- input$ApiButton
-      df
-    })
-
-  
-  ## Function to read locations
-  
-  
-  readLocs <- function(txt, locs, len){
-    rre <- lapply(locs,function(x) unlist(gregexpr(x, txt)))
-    len <- len
-    lapply(rre, function(x) ifelse( x > len, stringr::str_sub(txt,x-len,x+len),
-                                    stringr::str_sub(txt,x,x+len )))
-    
-  }
-  
+  # Call functions script
+  source("functions.R")
   
   ####### ----- ######
   ## UI order 
   ####### ----- ###### 
   
-  
-  ## FIRST TAB 
+# Conditional UI's and base reactive events
   
   # Get the name of files uploaded and display it as a dropping list
   output$names <- renderUI({
     dat <- input$file1
     selectInput('articlePath', 'Select an article to read', dat$name)
   })
+
   
-  # Get the name of files uploaded and display it as a dropping list in the third tab
-  output$names2 <- renderUI({
-    dat2 <- input$file1
-    selectInput('articlePath2', 'Select an article to read',dat2$name)
+  ## Settings tab
+  
+  # Render the conditional input for user choices of taxonomic resolution
+  output$conditionalInput <- renderUI({
+    if(input$SnamesOnly == F){
+      checkboxGroupInput("columns","or provide also:",
+                         choices  = c("family", "class"),
+                         selected = c("family", "class"))
+    }
   })
   
-  # Reactive expression after pressing "go" button
+  # Render conditional input for user choices of taxonomic database to query
+  output$conditionalInput2 <- renderUI({
+    if(input$SnamesOnly == F){
+      radioButtons("database", "Choose taxonomic database", 
+                         choices  = c("ncbi", "wikispecies (not yet implemented)"),
+                         selected = c("ncbi"))
+    }
+  })
+
+  
+  # Reactive expression triggered after pressing the "GetTaxa" button
   read <- eventReactive(input$GoButton,{
-    path <- input$file1$datapath
+    path <- input$file1
     getSnames(path, jSciNames = input$SnamesOnly,
               taxLevel = input$columns, 
               database = input$database)
-    
-    
   })
   
-  # Geocode scrapped locations 
   
-  geocoder <-  function(out1){ 
-    withProgress( value = 0.5 , message = "Geocoding Locations", { 
-      
-      fram <- data.frame(out1())
-      fram <- fram[fram$tag == "LOCATION",] # Get only location names
-      fram <- fram[,c(1,3)]
-      names(fram) <- c("Count","Location")
-      
-      toGeoCode <- unique(fram$Location)
-      print(toGeoCode)
-      tagText <- readLocs(read()$article,toGeoCode, 100)
-      names(tagText) <- toGeoCode
-      dfram <- reshape2::melt(tagText)
-      
-      
-      geocode <- ggmap::geocode(toGeoCode,messaging = F)
-      geocode$Location <- toGeoCode
-      
-      dfram$lat <- geocode$lat[match(dfram$L1,geocode$Location)]
-      dfram$lon <- geocode$lon[match(dfram$L1,geocode$Location)]
-      
-      return(dfram)})
-    
-  }
-  ### SECOND TAB 
+
+  Index = eventReactive(input$indexButton, { 
+
+    dictio = read.csv(input$dictionary,header = TRUE, stringsAsFactors = F)
+    corpusIndexText(read(), dictio)})
+
   
-  ## Taxonomic overview: 
+  # Reactive event triggered by the "Find Word Associations" button to find SkipGrams in the corpus text 
   
-  # Tab with Scientific Names found and count
-  # 
-  # 
-  # dictio <- read.csv(input$dictionary, header = TRUE, stringsAsFactors = F)
-  # path <- input$file1$datapath[match( input$articlePath,input$file1$name)]
+  skipGram =  eventReactive(input$SkGram,{
+    i = which(Index()$file == input$articlePath2)
+    findSkipGram(Index()[[i]]$text, filter = input$checkbox)})
+ 
+  ### Mine Biodiversity observations tab
+  
+  ## Mine based on Scientific names subtab
+  
+  # Render the datatable with scientific names + taxonomic id for the "Select an species" box
   
   output$data_table <- DT::renderDataTable({
-    
-    DT::datatable(read()$namew,rownames = F,filter = "top")
-    
+    DT::datatable(read()$namew,rownames = F,filter = "top",style = "bootstrap", selection = "single")
   })
   
-  ## Reactive event to give context with selected rows of names
+  
+  ## Reactive event to give context with selected rows of scientific names
   renderContext <- eventReactive(input$data_table_rows_selected,{
     rows <- input$data_table_rows_selected
     names <- read()$namew
@@ -319,55 +105,63 @@ shinyServer(function(input, output, session) {
     
   })
   
+  # Render the datatable with context for the text snippets box
   output$context <-  DT::renderDataTable({
-    DT::datatable(renderContext(), rownames = F, filter = "top")
+    DT::datatable(renderContext(), rownames = F, filter = "top",style = "bootstrap", selection = "single",extensions = "Buttons",
+                  options = list(dom = "Bfrtip", buttons = c( 'csv', 'pdf')))
   })
   
-  #######
+  ## Mine based on biodiversity events subtab: 
   
-  # THIRD TAB
-  # Ecological Events Overview
+  # Get the name of files uploaded and display it as a dropping list in the SkipGram Matches box
   
+  output$names2 <- renderUI({
+    dat2 <- input$file1
+    selectInput('articlePath2', 'Select an article to explore',dat2$name)
+  })
+  # Datatable with word associations in the SkipGram Matches box 
+  
+  output$skipGram = DT::renderDataTable({
+   DT::datatable(data.frame(skipGram()[,c(1,2,7)]), rownames = F, filter = "top",style = "bootstrap", selection = "single")
+  })
+  
+  
+  ## Reactive event to give context with selected rows of word associations
+  renderContext2 <- eventReactive(input$skipGram_rows_selected,{
+    rows <- input$skipGram_rows_selected
+    list <- skipGram()[rows,]
+    cont <- lapply(read()$content, function(x) giveContext2(x,list, input$up2,input$down2))
+    reshape2::melt(cont)
+    
+  })
+  
+  # Render the datatable with context for the text snippets box
+  output$context2 <-  DT::renderDataTable({
+    DT::datatable(renderContext2(), rownames = F, filter = "top",style = "bootstrap", selection = "single", extensions = "Buttons",
+                  options = list(dom = "Bfrtip", buttons = c( 'csv', 'pdf')))
+  })
+  
+  
+  
+  #--------------------------------------------------------------------------
   # Index selected articles 
   
   index <- eventReactive(input$GoButton2,{
     
-    wh <- match(input$articlePath,input$file1$name)
+    #wh <- match(input$articlePath,input$file1$name)
     
-    text <- read()$content[wh]
+    text <- read()$content#[wh]
     
-    verb <- read()$verbatim[wh]
+    verb <- read()$verbatim#[wh]
+    print("here")
     
     dictio <- read.csv(input$dictionary,header = TRUE, stringsAsFactors = F)
 
-    readtext(text[[1]], dictio, verb[[1]], input$up2, input$down2)  
-    
+    readLoop <- for (i in 1:length(text)){readtext(text[[i]], dictio, verb[[i]], input$up2, input$down2) }
+    print(readLoop)
   })
   
-  output$conditionalInput <- renderUI({
-    if(input$SnamesOnly == F){
-      checkboxGroupInput("columns", "Choose taxonomic level:", 
-                         choices  = c("family", "class"),
-                         selected = c("family", "class"))
-    }
-  })
   
-  output$conditionalInput2 <- renderUI({
-    if(input$SnamesOnly == F){
-      checkboxGroupInput("database", "Choose taxonomic database", 
-                         choices  = c("ncbi", "wikipedia"),
-                         selected = c("ncbi"))
-    }
-  })
-  
-  # Render Article (uselful to copy tables)
-  
-  articleRender <- eventReactive(input$renderArticle, { 
-    path <- input$file1$datapath[match(input$articlePath2,input$file1$name)]
-    print(path)
-                                       
-    pdftools::pdf_text(path)
-  })
   
   # Wordclouds  
   
@@ -381,24 +175,26 @@ shinyServer(function(input, output, session) {
   })
   
   
-  output$dictionary2 <- renderPlot({
+  output$dictionary2 <-  DT::renderDataTable({
     # Read the dictionary
-    c <- termcount(index()$dic,read()$chunks)
-    c <- c[c$count != 0,]
-    print(c)
-    wordcloud::wordcloud(c$term, c$count,scale=c(2,.8), min.freq = 1,
-                         max.words = 10, colors = brewer.pal(5,"YlOrRd"))
     
+    aa <- index()$dic
+    print(aa)
+    chun<- index()$chunks
+    print(chun)
+   c <- termcount(aa, chun)
+    DT::datatable(c,rownames = F,style = "bootstrap")
   })
   
   
-  # Tab to show the indexed results
+
+# Tab to show the indexed results
   
   
   output$Indexed.version <- DT::renderDataTable({
     dat <- data.frame(index()$chunks)
     print(index()$chunks)
-    DT::datatable(dat, rownames = F) })
+    DT::datatable(dat, rownames = F,style = "bootstrap", buttons = c( 'csv', 'pdf')) })
   
   
   
@@ -429,35 +225,47 @@ shinyServer(function(input, output, session) {
   })
   
   
-  # Reactive to "Get Locations" button 
-  
-  out1 <-  eventReactive(input$GoButton3,{
-    print("here locs")
-    locs <- locScrap(read()$article, key())
-    geocoder(locs)})
-  
-  
-  
-  
-  output$LocationsText <- DT::renderDataTable({
-    DT::datatable(out1(), rownames = F)
-  })
-  
- 
-  
-  output$map <- renderLeaflet({
-    na.omit(out1()) %>%
-    leaflet() %>% 
-   addProviderTiles("OpenStreetMap.Mapnik") %>%
-      addCircleMarkers(~lon,
-                       ~lat,
-                       popup = ~value, 
-                       fillOpacity=0.8,
-                       clusterOptions = markerClusterOptions()) #addTiles() %>% 
-       
-  })
   
 })
+
+
+
+# # Reactive event to Render an unformatted article text (uselful to copy tables)
+# articleRender <- eventReactive(input$renderArticle, { 
+#   read()$content
+#   # path <- input$file1$datapath[match(input$,input$file1$name)]
+#   # print(path)
+#   # 
+#   # pdftools::pdf_text(path)
+# })
+
+  # # Reactive to "Get Locations" button 
+  # 
+  # out1 <-  eventReactive(input$GoButton3,{
+  #   print("here locs")
+  #   locs <- locScrap(read()$article, key())
+  #   geocoder(locs)})
+  # 
+  # 
+  # 
+  # 
+  # output$LocationsText <- DT::renderDataTable({
+  #   DT::datatable(out1(), rownames = F)
+  # })
+  # 
+  # 
+  # 
+  # output$map <- renderLeaflet({
+  #   na.omit(out1()) %>%
+  #   leaflet() %>% 
+  #  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  #     addCircleMarkers(~lon,
+  #                      ~lat,
+  #                      popup = ~value, 
+  #                      fillOpacity=0.8,
+  #                      clusterOptions = markerClusterOptions()) #addTiles() %>% 
+  #      
+  # })
 
 
 # key = "cf0b9da7695ba68256cd61ee7fe04cbf84ae4ede"
@@ -467,4 +275,6 @@ shinyServer(function(input, output, session) {
 #                         biologia y matemacticas en america latina",
 #                     extractor_id = "ex_isnnZRbS", 
 #                     verbose = T)
+
+
 
