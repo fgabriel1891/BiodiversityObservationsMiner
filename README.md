@@ -1,10 +1,14 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1036826.svg)](https://doi.org/10.5281/zenodo.1036826)
 
-
-
 # BiodiversityObservationsMiner
 
 This shiny app allows mining biodiversity data from Literature. I have developed Biodiversity Observations Miner with guidance and input from [W. Daniel Kissling](https://www.danielkissling.de/) and [Emiel van Loon](https://staff.fnwi.uva.nl/e.e.vanloon/) of the [Institute of Biodiversity and Ecosystems Dynamics (IBED)](http://ibed.uva.nl/) from the University of Amsterdam (UvA)
+
+
+
+--------
+
+--------
 
 ### To use it from the shiny server: 
 
