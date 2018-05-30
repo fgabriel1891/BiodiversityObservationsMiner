@@ -13,9 +13,9 @@ A web application to unlock primary biodiversity data from published literat
 
 ## Running the application 
 
-### From the shiny server: 
+### In personal server: 
 
-https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/  (free)
+Use this [link](https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/) to run the application online  (free)
 
 ### To run locally in your computer:  
  
@@ -27,8 +27,10 @@ https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/  (free)
  
  4.- Run the app with RStudio. 
  
- Alternatively, you can run the `shiny::runGitHub()` function. Function arguments: `repo= "BiodiversityObservationsMiner", username= "fgabriel1891"`.
  
+ >  Alternatively, you can run the `shiny::runGitHub()` function. Function arguments: `repo= "BiodiversityObservationsMiner", username= "fgabriel1891"`.
+ 
+*Important!* 
  Before using Biodiversity Observations Miner locally we recommend to have [R](https://www.r-project.org/) and [Rstudio](https://www.rstudio.com/) installed and up to date. 
 
 **Consider this before using the app in the server or locally**
