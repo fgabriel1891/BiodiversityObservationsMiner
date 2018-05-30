@@ -11,13 +11,13 @@
 
 This shiny app allows mining biodiversity data from Literature.
 
-# Running the application 
+## Running the application 
 
-## From the shiny server: 
+### From the shiny server: 
 
 https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/  (free)
 
-## To run locally in your computer:  
+### To run locally in your computer:  
  
  1.- Fork or download the repository to a directory on your computer
  
@@ -35,14 +35,16 @@ https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/  (free)
 
 >  For the moment I only have a Starter Shiny server account. This limits the app to a couple of running hours / users per month. Until I solve this issue (either financing a [pro](https://www.rstudio.com/products/shiny-server-pro/) server, or deploying my own (however, this will take me to do some more time)  please consider using the current server as a testing ground for the app functionalities. If you want to mine a considerable number of literature files please run the app locally at your computer. 
 
---------
+
 For comments, suggestions and bugs please open an [issue](https://github.com/fgabriel1891/BiodiversityObservationsMiner/issues/new)
 
-## About 
+--------
+
+### About 
 
 The idea to develop this web application is set in the context of increasing the digital mobility and interoperbility of biodiversity data wordwide. I developed Biodiversity Observations Miner with guidance and input from [W. Daniel Kissling](https://www.danielkissling.de/) and [Emiel van Loon](https://staff.fnwi.uva.nl/e.e.vanloon/) of the [Institute of Biodiversity and Ecosystems Dynamics (IBED)](http://ibed.uva.nl/) from the University of Amsterdam (UvA). 
 
-### R packages required
+#### R packages required
 
 - shiny
 - shinythemes
@@ -58,6 +60,6 @@ The idea to develop this web application is set in the context of increasing the
 - tm
 - DT
 
-## Acknowledgements 
+### Acknowledgements 
 
 Biodiversity Observations Miner uses tools from GNA (GlobalNamesArchitecture) implemented in the taxize package. Thanks to Scott Chamberlain for modifications to taxize that improved the functionality of this application. Credits to the developers of the individual packages that Biodiversity Observations Miner is dependent on. Terms composing the pollination biodiversity dictionary were selected in collaboration with Joan Casanelles. 
