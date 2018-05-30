@@ -4,50 +4,60 @@
 
 [![GitHub issues](https://img.shields.io/github/issues/Naereen/StrapDown.js.svg)](https://GitHub.com/fgabriel1891/BiodiversityObservationsMiner/issues/)
 
-
-# BiodiversityObservationsMiner
-
-This shiny app allows mining biodiversity data from Literature. I have developed Biodiversity Observations Miner with guidance and input from [W. Daniel Kissling](https://www.danielkissling.de/) and [Emiel van Loon](https://staff.fnwi.uva.nl/e.e.vanloon/) of the [Institute of Biodiversity and Ecosystems Dynamics (IBED)](http://ibed.uva.nl/) from the University of Amsterdam (UvA)
+[![CC-0 license](https://img.shields.io/badge/License-CC--0-blue.svg)](https://creativecommons.org/licenses/by-nd/4.0)
 
 
+# Biodiversity Observations Miner
 
---------
+This shiny app allows mining biodiversity data from Literature.
 
---------
+# Running the application 
 
-### To use it from the shiny server: 
+## From the shiny server: 
 
 https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/  (free)
 
-### To run locally in your computer:  
+## To run locally in your computer:  
  
- 1.- Clone or download the repository to a directory on your computer
+ 1.- Fork or download the repository to a directory on your computer
  
  2.- Open the R Project container file
  
- 3.- Make sure you have all R packages installed and updated to run the app (see About) 
+ 3.- Make sure you have all R packages installed and updated to run the app (see below) 
  
- 4.- Run the app through RStudio with the RunApp button. 
+ 4.- Run the app with RStudio. 
  
  Alternatively, you can run the `shiny::runGitHub()` function. Function arguments: `repo= "BiodiversityObservationsMiner", username= "fgabriel1891"`.
  
+ Before using Biodiversity Observations Miner locally we recommend to have [R](https://www.r-project.org/) and [Rstudio](https://www.rstudio.com/) installed and up to date. 
 
-#### Consider this before using the app in the server or locally
+**Consider this before using the app in the server or locally**
 
-For the moment I have a Starter Shiny server account. This limits the app to a couple of running hours / users per month. Until (if) I get financing to run the app in a [pro.server](http://www.shinyapps.io/)  please only use the server as a test of the app functionalities. If you want to use/mine larger portions of literature please run the app locally at your computer. 
-
-I am open to get in touch for development / financing ideas for this app. 
+>  For the moment I only have a Starter Shiny server account. This limits the app to a couple of running hours / users per month. Until I solve this issue (either financing a [pro](https://www.rstudio.com/products/shiny-server-pro/) server, or deploying my own (however, this will take me to do some more time)  please consider using the current server as a testing ground for the app functionalities. If you want to mine a considerable number of literature files please run the app locally at your computer. 
 
 --------
 For comments, suggestions and bugs please open an [issue](https://github.com/fgabriel1891/BiodiversityObservationsMiner/issues/new)
 
+## About 
 
-### Required packages to fuction (if you run locally) 
+The idea to develop this web application is set in the context of increasing the digital mobility and interoperbility of biodiversity data wordwide. I developed Biodiversity Observations Miner with guidance and input from [W. Daniel Kissling](https://www.danielkissling.de/) and [Emiel van Loon](https://staff.fnwi.uva.nl/e.e.vanloon/) of the [Institute of Biodiversity and Ecosystems Dynamics (IBED)](http://ibed.uva.nl/) from the University of Amsterdam (UvA). 
 
-shinythemes
-DT
-stringi
-stringr
-wordcloud
-taxize
-fulltext
+### R packages required
+
+- shiny
+- shinythemes
+- shinydashboard
+- stringi
+- stringr
+- taxize
+- tidyverse
+- tidytext
+- tibble
+- widyr
+- fulltext
+- tm
+- DT
+
+## Acknowledgements 
+
+Biodiversity Observations Miner uses tools from GNA (GlobalNamesArchitecture) implemented in the taxize package. Thanks to Scott Chamberlain for modifications to taxize that improved the functionality of this application. Credits to the developers of the individual packages that Biodiversity Observations Miner is dependent on. Terms composing the pollination biodiversity dictionary were selected in collaboration with Joan Casanelles. 
