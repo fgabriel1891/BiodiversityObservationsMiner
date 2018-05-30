@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/release/Naereen/StrapDown.js.svg)](https://GitHub.com/fgabriel1891/BiodiversityObservationsMiner/releases/)
 
-[![GitHub commits](https://img.shields.io/github/commits-since/Naereen/StrapDown.js/v1.0.0.svg)](https://GitHub.com/Naereen/SBiodiversityObservationsMiner/commits/)
+[![GitHub issues](https://img.shields.io/github/issues/Naereen/StrapDown.js.svg)](https://GitHub.com/fgabriel1891/BiodiversityObservationsMiner/issues/)
 
 
 # BiodiversityObservationsMiner
