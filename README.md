@@ -9,7 +9,7 @@
 
 # Biodiversity Observations Miner
 
-This shiny app allows mining biodiversity data from Literature.
+A web application to unlock primary biodiversity data from published literature
 
 ## Running the application 
 
