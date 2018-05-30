@@ -15,7 +15,8 @@ A web application to unlock primary biodiversity data from published literat
 
 ### On my personal server: 
 
-Use this [link](https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/) to run the application online  (free)
+Use this [link](https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/) to run the application online  **(free)**
+
 It also runs in almost any other device with internet access (e.g. Tablets).  
 
 ### To run locally on your computer:  
@@ -49,20 +50,19 @@ The idea to develop this web application is set in the context of increasing the
 
 #### R packages required
 
-- shiny
-- shinythemes
-- shinydashboard
-- stringi
-- stringr
-- taxize
-- tidyverse
-- tidytext
-- tibble
-- widyr
-- fulltext
-- tm
-- DT
+- [shiny](https://shiny.rstudio.com/)
+- [shinydashboard](https://rstudio.github.io/shinydashboard)
+- [stringi](http://www.gagolewski.com/software/stringi/)
+- [stringr](http://stringr.tidyverse.org/)
+- [taxize](https://ropensci.github.io/taxize-book/)
+- [tidyverse](https://www.tidyverse.org/)
+- [tidytext](https://www.tidytextmining.com/)
+- [tibble](https://tibble.tidyverse.org/)
+- [widyr](https://github.com/dgrtwo/widyr)
+- [fulltext](https://ropensci.org/tutorials/fulltext_tutorial/)
+- [tm](http://tm.r-forge.r-project.org/)
+- [DT](https://rstudio.github.io/DT/)
 
 ### Acknowledgements 
 
-Biodiversity Observations Miner uses tools from GNA (GlobalNamesArchitecture) implemented in the taxize package. Thanks to Scott Chamberlain for modifications to taxize that improved the functionality of this application. Credits to the developers of the individual packages that Biodiversity Observations Miner is dependent on. Terms composing the pollination biodiversity dictionary were selected in collaboration with Joan Casanelles. 
+Biodiversity Observations Miner uses tools from the [GlobalNamesArchitecture](http://globalnames.org/) (GNA) implemented in the [taxize](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3901538/) package. Thanks to Scott Chamberlain for modifications to taxize that improved the functionality of this application. Credits to the developers of the individual packages that Biodiversity Observations Miner is dependent on. Terms composing the pollination biodiversity dictionary were selected in collaboration with [Joan Casanelles](https://www.researchgate.net/profile/Joan_Casanelles_Abella). 
