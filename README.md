@@ -6,11 +6,12 @@
 
 [![CC-0 license](https://img.shields.io/badge/License-CC--0-blue.svg)](https://creativecommons.org/licenses/by-nd/4.0)
 
---------
 
 # Biodiversity Observations Miner
 
 A web application to unlock primary biodiversity data from published literature
+
+--------
 
 ## Running the application 
 
