@@ -6,6 +6,7 @@
 
 [![CC-0 license](https://img.shields.io/badge/License-CC--0-blue.svg)](https://creativecommons.org/licenses/by-nd/4.0)
 
+--------
 
 # Biodiversity Observations Miner
 
@@ -62,6 +63,8 @@ The idea to develop this web application is set in the context of increasing the
 - [fulltext](https://ropensci.org/tutorials/fulltext_tutorial/)
 - [tm](http://tm.r-forge.r-project.org/)
 - [DT](https://rstudio.github.io/DT/)
+
+--------
 
 ### Acknowledgements 
 
