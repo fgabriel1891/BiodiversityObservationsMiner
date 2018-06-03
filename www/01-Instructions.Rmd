@@ -1,10 +1,19 @@
 
 
------------
+> This shiny web application allows to explore a large corpus of scientific (or gray) literature to find information on specific biodiversity related questions. This application can also be run locally with RStudio. 
+
+--------
 # Instructions
 
-1.- Upload pdf versions of documents/articles to mine in the Upload Literature Tab.
+1.- Go to the Settings tab, there you can upload your literature as pdf files. Adjust the settings in all boxes.
 
-2.- Under the Mine Biodiversity Observations tab, mine especific biodiversity data associated to: **scientific names**, **biodiversity events** or **geographical locations**.
+2.- Go to the Mine Biodiversity Observations tab. Two sub-tabs will be displayed. Here you can choose to find biodiversity information either based on taxonomic entities or using word associations to find information of interest. 
 
-3.- Make mined data available to others through ZENODO, GitHub or other data repositories.
+3.- Make collected (mined) data available to others through ZENODO, GitHub or other data repositories.
+
+---------
+
+## Why mining data from literature
+
+ > The amount and diversity of published literature in the internet poses many challenges for knowledge discovery. A considerable portion of primary biodiversity observations is still digitally locked, inside scientific (non-scientific) texts which are often stored as pdf files. This information is difficult to find, hardly accesible and not interoperable or reusable (Wilkinson et al. 2016). The search for knoledge and construction of large scale predictive models in biodiversity science (Kissling & Schleuning 2015) could potentialy benefit by making this biodiversity knowledge digitally accesible, standardized and machine readable. 
+

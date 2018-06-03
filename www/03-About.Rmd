@@ -1,0 +1,101 @@
+
+
+
+----------
+
+
+# Where to get articles? 
+
+There is many ways to get articles. If you have the access to Academic Databases ( e.g. [Web of Science](https://login.webofknowledge.com/)) you can just download as many articles you want and feed them to the app. However, not all researchers interested on biodiversity have the same access to published information on the web. Therefore, below you can find a list of sources to search for academic publications. Ideally, and if your focusing your research on tropical regions or zones where english is not the main lenguage, a good literature search should involves queries in as many databases possible.
+
++ [arXiv](arxiv.org) (Free) 
++ [Redalyc](www.redalyc.org) (Free) 
++ [FreeFullPDF](www.freefullpdf.com) (Free) 
++ [Wiley](www.wiley.com) (Subscription needed) 
++ [CORE](core.ac.uk) (Free) 
++ [Microsoft Academic](academic.microsoft.com) (Free for 10K queries per month) 
++ [Springer](www.springer.com) (Subscription needed) 
++ [Web of Science](webofknowledge.com) (Subscription needed) 
++ [Russian Science Citation Index](elibrary.ru) (Free) 
++ [SciELO](www.scielo.org) (Free) 
++ [Directory of Open Access Journals](www.doaj.org) (Free) 
++ [BioOne](www.bioonepublishing.org) (Subscription needed) 
++ [Google Scholar](scholar.google.com)
++ [ScienceOpen](scienceopen.com) (Free) 
++ [Scopus](www.scopus.com) (Free) 
++ [Socolar](www.socolar.com) (Free) 
++ [Public Library of Science](www.plos.org)
++ [EuropePMC](europepmc.org) (Free) 
++ [Crossref](www.crosref.org) (Free) 
++ [Biblat](biblat.unam.mx) (Free)  
++ [Sci-Hub](sci-hub.cc) (Free) 
+
+----------
+
+## Programatic query and download 
+
+It is possible to (semi)- automatize the process of downloading articles. Funtionalities like this could be integrated in future versions of this app. If you are interest on this process check the following links below: 
+
+### Gists 
+
+I do not maintain/own any of the links, they might be outdated
+
+- [sci-hub.py](https://github.com/zaytoun/scihub.py) (python)
+
+- [scholar_scrape.py](https://gist.github.com/napmany/e92156d335ce23074cfc8f6ce7744f75) (python)
+
+- [getScholarPdf.py](https://gist.github.com/gongstar/6710364) (python)
+
+- [Scrapping Science Articles](https://gist.github.com/rmarrotte/c6e8c79d69f481670167354ec9b3d65e) ( R )
+
+
+If you are not so familiar with programming, another very good option to shorten the process of downloading articles is described in [Haddaway et al. 2017](https://environmentalevidencejournal.biomedcentral.com/articles/10.1186/s13750-016-0079-2). 
+
+----------
+
+# How to create a Biodiversity Dictionary? 
+
+A dictionary is a list of common "standard" terms that researchers use to describe a particular process in ecology.  For example, amongst other terms, to describe frugivory events the words `diet`, `frugivore`, `seed dispersal` are used frequently.
+
+
+To build a biodiversity dictionary you could simply list your common terms of interest. Although the pool of terms used to describe a particular ecological event is finite, it can become difficult (even for an specialist) to recall all terms commonly used in publications. Therefore a better option to get terms is to directly extract them from a small collection of "key" articles ( articles you know that contain the desired information).  Web tools, such as  [TERMINE](http://www.nactem.ac.uk/software/termine/#form), exist to extract the main terms of a document or a collection of documents. If your familiar with R, packages like `tm` to extract terms from [corpus](reference to corpus) of articles, calculate term frequencies, etc. 
+
+
+A bit more elaborated way can be found [here](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0175277)
+
+
+----------
+
+# I have mined my data, now what? 
+
+
+Well, once you have mined your data, share the data and make it available to others. [Zenodo](https://zenodo.org/) is a good free repository for any kind of data. More specific repositories also exist for: 
+  
+  + Species traits data:  TRY
+  + Species interaction data: [GLOBI](https://www.globalbioticinteractions.org/contribute)
+  + Species occurrence data: GBIF
+  
+By minding the gap between the availability of data from published literature to digitally accesible you will contribute to increase the general global understanding of key ecological processes and to identify specific and geographical gaps in our shared ecological knowledge. 
+
+----------
+
+# References and Further reading
+
+
+
+Bisby, F. A. (2000). The quiet revolution: biodiversity informatics and the internet. Science, 289(5488), 2309-2312.
+
+Thuiller, W., Münkemüller, T., Lavergne, S., Mouillot, D., Mouquet, N., Schiffers, K., & Gravel, D. (2013). A road map for integrating eco‐evolutionary processes into biodiversity models. Ecology letters, 16(s1), 94-105.
+
+
+Pyle RL. (2016). Towards a Global Names Architecture: The future of indexing scientific names. ZooKeys 550: 261‑81. https://doi.org/10.3897/zookeys.550.10009
+
+Senderov V, Gerogiev T, Agosti D, Catapano T, Sautter, G, Tuama EO, Franz N, Simov, K, Stoev P, Penev L. (2017). OpenBiodiv: an Implementaion of a Semantic System Running on top of the Biodiversity Knowledge Graph. Proceedings of TDWG 1: e20084. https://doi.org/10.3897/tdwgproceedings.1.20084
+
+
+----------
+
+# Aknowledgements 
+
+Biodiversity Observations Miner uses tools from the [GNA (GlobalNamesArchitecture)](https://github.com/GlobalNamesArchitecture) implemented in the [taxize](https://github.com/ropensci/taxize) package. Thanks to Scott Chamberlain for modifications to ´taxize´ that improves the functionality of this app.
+Credits to the developers of the individual packages Biodiversity Observations Miner is dependent on.  
