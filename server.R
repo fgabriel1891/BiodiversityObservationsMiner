@@ -91,7 +91,8 @@ shinyServer(function(input, output, session) {
   # Render the datatable with scientific names + taxonomic id for the "Select an species" box
   
   output$data_table <- DT::renderDataTable({
-    DT::datatable(read()$namew,rownames = F,filter = "top",style = "bootstrap", selection = "single")
+    DT::datatable(read()$namew,rownames = F,filter = "top",
+                  style = "bootstrap", selection = "single")
   })
   
   
@@ -107,7 +108,8 @@ shinyServer(function(input, output, session) {
   
   # Render the datatable with context for the text snippets box
   output$context <-  DT::renderDataTable({
-    DT::datatable(renderContext(), rownames = F, filter = "top",style = "bootstrap", selection = "single",extensions = "Buttons",
+    DT::datatable(renderContext(), rownames = F, filter = "top",style = "bootstrap",
+                  selection = "single",extensions = "Buttons",
                   options = list(dom = "Bfrtip", buttons = c( 'csv', 'pdf')))
   })
   
@@ -122,7 +124,8 @@ shinyServer(function(input, output, session) {
   # Datatable with word associations in the SkipGram Matches box 
   
   output$skipGram = DT::renderDataTable({
-   DT::datatable(data.frame(skipGram()[,c(1,2,7)]), rownames = F, filter = "top",style = "bootstrap", selection = "single")
+   DT::datatable(data.frame(skipGram()[,c(1,2,7)]), rownames = F, filter = "top",
+                 style = "bootstrap", selection = "single")
   })
   
   
@@ -229,52 +232,6 @@ shinyServer(function(input, output, session) {
 })
 
 
-
-# # Reactive event to Render an unformatted article text (uselful to copy tables)
-# articleRender <- eventReactive(input$renderArticle, { 
-#   read()$content
-#   # path <- input$file1$datapath[match(input$,input$file1$name)]
-#   # print(path)
-#   # 
-#   # pdftools::pdf_text(path)
-# })
-
-  # # Reactive to "Get Locations" button 
-  # 
-  # out1 <-  eventReactive(input$GoButton3,{
-  #   print("here locs")
-  #   locs <- locScrap(read()$article, key())
-  #   geocoder(locs)})
-  # 
-  # 
-  # 
-  # 
-  # output$LocationsText <- DT::renderDataTable({
-  #   DT::datatable(out1(), rownames = F)
-  # })
-  # 
-  # 
-  # 
-  # output$map <- renderLeaflet({
-  #   na.omit(out1()) %>%
-  #   leaflet() %>% 
-  #  addProviderTiles("OpenStreetMap.Mapnik") %>%
-  #     addCircleMarkers(~lon,
-  #                      ~lat,
-  #                      popup = ~value, 
-  #                      fillOpacity=0.8,
-  #                      clusterOptions = markerClusterOptions()) #addTiles() %>% 
-  #      
-  # })
-
-
-# key = "cf0b9da7695ba68256cd61ee7fe04cbf84ae4ede"
-# 
-# monkeylearn_extract("Brazil es la fuente de la mayor 
-#                         conatidad de estudios en agronomía,
-#                         biologia y matemacticas en america latina",
-#                     extractor_id = "ex_isnnZRbS", 
-#                     verbose = T)
 
 
 

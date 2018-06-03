@@ -54,7 +54,7 @@ getSnames <- function(path, jSciNames = F, taxLevel, database ){
   
   print("initiated")
   # Initiate progress bar
-  withProgress( value = 0.1 , message = "Scrapping Scientific Names", { 
+  withProgress( value = 0.1 , message = "Finding Taxonomic Entities", { 
     # Set an apply function to extract the scientific names of the articles uploaded. 
     names = path$name
     path = path$datapath
@@ -77,17 +77,17 @@ getSnames <- function(path, jSciNames = F, taxLevel, database ){
     
     else  {  
       # Create unique pool of names to identify (Save computation time)
-      spfound <- unique(namew$species)
+      taxaFound <- unique(namew$species)
       #incProgress(amount = 0.4, message = "Done!" )
       incProgress(amount = 0.2,
                   message = "Finding taxonomic 
-                  ontologies of scientific names found" ) # update progress bar
+                  ontologies recognized taxonomic entities" ) # update progress bar
       print(database)
       # Identify family and class names
-      families <- taxize::tax_name(spfound, get = taxLevel,
+      families <- taxize::tax_name(taxaFound, get = taxLevel,
                                    db = database, verbose = F,messages = F,
                                    ask = F) # Look for families
-      families <- cbind(spfound, families)
+      families <- cbind(taxaFound, families)
       out <- c("query","db")
       families2 <- families[,!(names(families) %in% out)]
       ret$namew <-NULL
@@ -163,19 +163,33 @@ corpusIndexText = function(names, regex){
   Corp = as_tibble(TextCorpus)
   names(Corp) = "text" ## Important! 
   verbatim =  sapply(1:length(names$verbatim), function(x) "verbatim" = names$verbatim[x])
+  print(verbatim)
   ## Loop to index scientific names and dictionary matches and find snippets
   indexText = c()
-  for (i in 1: length(TextCorpus)){
+  for (i in 1: length(Corp)){
     print(i)
-    indexText[[i]] = tryCatch({Index(read = TextCorpus[i], verbatim = verbatim[[i]], regex )}, 
+    indexText[[i]] = tryCatch({Index(read = Corp[i], verbatim = verbatim[[i]], regex )}, 
                               error = function(e) print(paste("There was an Error at" ,i)))
   }
   indexText$file = names$file
   return(indexText)
   
 }
-
-
+# create corpus 
+# TextCorpus = sapply(re$content, function(x) "text" = x)
+# Corp = as_tibble(TextCorpus)
+# verbatim =  sapply(1:length(re$verbatim), function(x) "verbatim" = re$verbatim[x])
+# str(verbatim)
+# Index(read = Corp[i], verbatim = verbatim, dic )
+# verbatim
+# re$verbatim
+# rrr = taxize::scrapenames(file = "www/frugivory/OFarrill_et_al_Tapirs.pdf", return_content = T)
+# sdas = Index(read = Corp[i], verbatim = verbatim, dic )
+# sdas$file = "tapirs"
+# findSkipGram(sdas)
+# re = rrr$meta$content
+# re$verbatim = rrr$data
+# names(re) = c("content", "verbatim")
 # Function to retrieve the snippets of corpus text matching the desired terms 
 
 giveContext2 <- function(text,skipGram, up, down) {

@@ -15,7 +15,7 @@ library(shinydashboard)
 ### Set color and similar paramenters
 
 skin = "black" # Skin of dashboard 
-title = "Biodiversity Observations Miner" # Title of APP
+title = "Biodiversity Observations Miner v.1.0" # Title of APP
 twidth = 400 # width of dashboard title 
 width = 300 # width of dashboard
 
@@ -37,17 +37,17 @@ shinyUI(
                                    menuItem( text = "Home",
                                             tabName = "Instr",
                                             icon = icon("home")),
-                                   menuItem( text = "Upload Files",
+                                   menuItem( text = "Settings",
                                              tabName = "Set",
                                              icon = icon("floppy-open", lib = "glyphicon")
                                              ),
                                    menuItem( text = "Mine Biodiversity Observations",
                                              tabName = "Mine",
                                              icon = icon("binoculars"),
-                                   menuSubItem( text = "Mine Scientific names",
+                                   menuSubItem( text = "by taxa",
                                              tabName = "ScienNames",
                                              icon = icon("envira")),
-                                   menuSubItem( text = "Match with biodiversity dictionaries",
+                                   menuSubItem( text = "with Biodiversity dictionaries",
                                              tabName = "Events",
                                              icon = icon("puzzle-piece"))),
                                    # menuItem( text = "Mine by Geographical Locations",
@@ -75,9 +75,18 @@ shinyUI(
                   
                              
                              tabItems(
+                                            
+                                tabItem("Instr", 
+                                        h1("Welcome to Biodiversity Observations Miner!"),
+                                        p(),
+                                        includeMarkdown("www/01-Instructions.Rmd"),
+                                        p("This shiny app is currently on development and under the CreativeCommons CC BY-NC-SA License.")
+                                        ),
                                tabItem("Set",
-                                       fluidRow(
-                                         box(title = "Upload you article(s) to mine",
+                                       fluidPage(
+                                         h2("Settings tab"),p(),
+                                         h4("Follow the necessary steps inside the boxes before heading to the next tab"),
+                                         box(title = "1: Upload you article(s) to mine",
                                              width = 12 ,status = "success", solidHeader = TRUE,
                                               fileInput('file1', 'Upload your article(s) here',
                                                    accept=c('.pdf'), multiple = T,
@@ -87,33 +96,36 @@ shinyUI(
                                                h5("Files must be in PDF format"), 
                                                p( "It is recomended to name your files appropiately"),
                                                p( "(e.g. SomeAuthor_et_al_2018.pdf)"),
-                                               h5("Scanned versions of articles are not yet accepted "))))
-                                      ),
-                                            
-                                tabItem("Instr", 
-                                        h1("Welcome to Biodiversity Observations Miner!"),
-                                        p(),
-                                        includeMarkdown("www/01-Instructions.Rmd"),
-                                        p("This shiny app is currently on development and under the CreativeCommons CC BY-NC-SA License.")
-                                        ),
+                                               h5("Scanned versions of articles are not yet accepted "))),
+                                       box(title = "2: Select taxonomic resolution", status = "warning", 
+                                           collapsible = T,width = 12,collapsed = T,
+                                           p("Selecting many options to resolve taxonomically will result in longer computational times, please be patient. 
+                                             (specially when your corpus contain a large and diverse collection of scientific names "),
+                                           p("When you are done, click on the Button at the bottom of the box"),
+                                           h5(tags$b("Identify species until:")),
+                                           checkboxInput("SnamesOnly", "Scientific names Only", value = FALSE, width = NULL),
+                                           uiOutput("conditionalInput"),
+                                           uiOutput("conditionalInput2"),
+                                           actionButton(inputId = "GoButton", label = tags$b("Get Taxa"),icon("mouse-pointer"), 
+                                                        style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
+                                       box(title = "3: Select a biodiversity dictionary", width = 12, collapsible = T,collapsed = T,
+                                           status = "warning",
+                                           selectInput(inputId = "dictionary",
+                                                       label = "From the dropdown list",
+                                                       path2),
+                                           p("When you are done, click on the Button at the bottom of the box"),
+                                           actionButton("indexButton", label = tags$b("Index"),icon("mouse-pointer"), 
+                                                        style="color: #fff; background-color: #337ab7; border-color: #2e6da4")))),
                                tabItem("ScienNames",
-                                       HTML("<br><br><br>"),
                                        fluidPage(
-                                       column(4,
-                                              fluidRow(
-                                         box(title = "Select taxonomic resolution", status = "warning", 
-                                             collapsible = T,width = 12,collapsed = T,
-                                             p("Selecting many options to resolve taxonomically will result in longer computational times, please be patient. 
-                                               (specially when your corpus contain a large and diverse collection of scientific names "),
-                                             h5(tags$b("Identify species until:")),
-                                             checkboxInput("SnamesOnly", "Scientific names Only", value = FALSE, width = NULL),
-                                             uiOutput("conditionalInput"),
-                                             uiOutput("conditionalInput2"),
-                                             actionButton(inputId = "GoButton", label = tags$b("Get Taxa"),icon("mouse-pointer"), 
-                                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))),
+                                         h2("Use the taxa found in the text to find biodiversity observations"), 
+                                         HTML("<br><br><br>"),
+                                         column(5,
                                          fluidRow(
-                                         box( title = "Select an species",collapsible = T,
+                                         box( title = "Select a taxa",collapsible = T,
                                               width = 12,status = "warning",
+                                              p("The following table contains the taxonomic entities recognize in the corpus text.
+                                                Taxonomic entities are found with the Global Names Recognition and Discovery tool"),
                                               p("Set context limits:"),
                                               p("Lenght in characters left and right from the indexed positions"),
                                               column(5,
@@ -123,28 +135,27 @@ shinyUI(
                                                      sliderInput("down", "Right:", min = 0, max = 500, 
                                                                  value = 100, step= 10)),
                                               DT::dataTableOutput("data_table", width = "90%")))),
-                                       column(8,
+                                       column(7,
                                        box(title = "Text snippets",collapsible = T, width = 12,solidHeader = T, 
                                            status = "danger",
                                           
                                          DT::dataTableOutput("context"))))),
                                tabItem("Events",
-                                       HTML("<br><br>"),
                                        fluidPage(
+                                         h2("Find data linked to a particular biodiversity event"),
+                                         HTML("<br><br><br>"),
                                        column(5,
-                                         box(title = "Select a biodiversity dictionary", width = 12, collapsible = T,collapsed = F,
-                                             status = "warning",
-                                           selectInput(inputId = "dictionary",
-                                                       label = "From the dropdown list",
-                                                       path2),
-                                           actionButton("indexButton", label = tags$b("Index"),icon("mouse-pointer"), 
-                                                        style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                                           h3("SkipGram matches"),
+                                              box( title = "Content discovery",collapsible = T,
+                                                   width = 12,status = "warning",
+                                         
                                           uiOutput("names2"),
-                                        checkboxInput("checkbox", label = "Filter by dictionary terms?", value = TRUE),
-                                        actionButton("SkGram", label = tags$b("Find Word Associations"),icon("mouse-pointer"), 
+                                        checkboxInput("checkbox", 
+                                                      label = "Filter by dictionary terms?",
+                                                      value = TRUE),
+                                        actionButton("SkGram", 
+                                                     label = tags$b("Find Word Associations"),
+                                                     icon("mouse-pointer"), 
                                                                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                                        
                                          h5(tags$b("Set context limit")),
                                          p("Lenght in characters left and right from the indexed positions"),
                                          column(5,
@@ -153,12 +164,14 @@ shinyUI(
                                          column(5,
                                                 sliderInput("down2", "Right:", min = 0, max = 500, 
                                                             value = 100, step= 10)),
-                                         DT::dataTableOutput("skipGram",width = "90%"))
-                                       ),
+                                         DT::dataTableOutput("skipGram",width = "90%"))),
                                        column(7,
-                                         box(title = "Text snippets", collapsible = T, width = 12, collapsed = F,status = "danger",solidHeader = T,
+                                         box(title = "Text snippets", collapsible = T, 
+                                             width = 12, collapsed = F,
+                                             status = "danger",
+                                             solidHeader = T,
                                              DT::dataTableOutput("context2", width = "90%")
-                                         )))
+                                         )))),
                                        # fluidRow(
                                        #   tabBox(title = "Plots",
                                        #          # The id lets us use input$tabset1 on the server to find the current tab
@@ -169,7 +182,7 @@ shinyUI(
                                        #                   plotOutput("plot")),
                                        #          tabPanel("Dictionary Matches",
                                        #                   DT::dataTableOutput("dictionary2"))))
-                                       ),
+                      
                                tabItem("About",
                                        includeMarkdown("www/02-About.Rmd"),
                                        p(h3("Workflow")),
@@ -191,7 +204,7 @@ shinyUI(
                                          ))),
                                tabItem("contact",
                                        fluidPage(
-                                         h3("Developed by: Gabriel Muñoz"),
+                                         h3("BOM was written  by: Gabriel Muñoz"),
                                          h5("GitHub"),
                                          a(shiny::icon('github fa-2x'),href='https://github.com/fgabriel1891/',target='_blank'),
                                          br(),
@@ -199,30 +212,12 @@ shinyUI(
                                          a(shiny::icon('envelope-open fa-2x'),href='mailto:fgabriel1891@gmail.com',target='_blank'),
                                          br(),
                                          h5("Personal Page"),
-                                         a(shiny::icon('user fa-2x'),href='https://sites.google.com/view/fgabriel1891',target='_blank')
-                                         
+                                         a(shiny::icon('user fa-2x'),href='https://sites.google.com/view/fgabriel1891',target='_blank'),
+                                         HTML("<br><br/><br><br/>"),
+                                         h3("Guidance, comments and input by:"),
+                                         h4(a("W.Daniel Kissling"), href = "https://www.danielkissling.de/", target = "_blank"),
+                                         h4(a("Emiel van Loon"), href = "https://staff.fnwi.uva.nl/e.e.vanloon/", target = "_blank")
                                          ))
                              
-                             ))
-))
-  
-
-                               #       
-                               # tabItem("Geog",
-                               #         h1("Mine by geographical locations"),
-                               #         HTML("<br><br><br><br><br><br>"),
-                               #         fluidPage(
-                               #           fluidRow( 
-                               #             box( title = "Index geographically",collapsible = T, width = 4,collapsed = T,
-                               #                  textInput("ApiButton", " Type your monkeylearn API key here", ""),
-                               #                  actionButton("submit","Submit"),
-                               #                  actionButton(inputId = "GoButton3",
-                               #                               label = "Scrape Locations"))),
-                               #           fluidRow(
-                               #                    tabsetPanel(
-                               #                      tabPanel("Map",
-                               #                               leafletOutput("map")),
-                               #                      tabPanel("Locations Mined",
-                               #                               DT::dataTableOutput("LocationsText")))
-                               #                    ))
-                               #         ),
+                             )))
+)
