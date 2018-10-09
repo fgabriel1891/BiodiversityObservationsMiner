@@ -48,7 +48,7 @@ For comments, suggestions and bugs please open an [issue](https://github.com/fga
 
 ### About 
 
-The idea to develop this web application is set in the context of increasing the digital mobility and interoperbility of biodiversity data wordwide. I developed Biodiversity Observations Miner with guidance and input from [W. Daniel Kissling](https://www.danielkissling.de/) and [Emiel van Loon](https://staff.fnwi.uva.nl/e.e.vanloon/) of the [Institute of Biodiversity and Ecosystems Dynamics (IBED)](http://ibed.uva.nl/) from the University of Amsterdam (UvA). 
+The idea to develop this web application is set in the context of increasing the digital mobility and interoperability of biodiversity data wordwide. I developed Biodiversity Observations Miner with guidance and input from [W. Daniel Kissling](https://www.danielkissling.de/) and [Emiel van Loon](https://staff.fnwi.uva.nl/e.e.vanloon/) of the [Institute of Biodiversity and Ecosystems Dynamics (IBED)](http://ibed.uva.nl/) from the University of Amsterdam (UvA). 
 
 #### R packages required
 
