@@ -108,7 +108,7 @@ shinyUI(
                                     
                                tabItem("Set",
                                        fluidPage(
-                                         includeMarkdown("settings.Rmd"),
+                                         includeMarkdown("www/settings.Rmd"),
                                         br(),br(),
                                          box(title = "Upload you article(s) to mine",
                                              width = 12 ,status = "success", 
