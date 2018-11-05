@@ -54,17 +54,24 @@ getSnames <- function(path, jSciNames = F, taxLevel, database ){
   
   print("initiated")
   # Initiate progress bar
-  withProgress( value = 0.1 , message = "Finding Taxonomic Entities", { 
+  withProgress( value = 0.1 ,
+                message = "Finding Taxonomic Entities", { 
     # Set an apply function to extract the scientific names of the articles uploaded. 
     names = path$name
     path = path$datapath
-    scrapeRes <- lapply(path, function(x) tryCatch({scrapenames(file = x, return_content = T)}, error = function(e) NULL ))
-    content <- lapply(scrapeRes, function(x) x$meta$content) # return the text content
+    scrapeRes <- lapply(path, function(x)
+      tryCatch({scrapenames(file = x,
+                            return_content = T)}, 
+               error = function(e) NULL ))
+    content <- lapply(scrapeRes, function(x) 
+      x$meta$content) # return the text content
     names(content) <- names
     verbatim <- lapply(scrapeRes, function(x) x$data) # return the scientific names found 
     names(verbatim) <- names # give proper names
     namew <- lapply(verbatim, function(x) unique(x$scientificname)) # list scientific names 
-    namew <- reshape2::melt(namew) # arrage dataset with file
+    goodArt =sapply(1:length(namew), function(x) length(namew[[x]]))
+    goodArt2 = which(goodArt > 0)
+    namew <- reshape2::melt(namew[goodArt2]) # arrage dataset with file
     names(namew) <- c("species", "file") # give proper names
     ret <- list()
     ret$content <- content
@@ -73,7 +80,8 @@ getSnames <- function(path, jSciNames = F, taxLevel, database ){
     ret$namew <- namew
     
     if (jSciNames == T) { 
-      incProgress(amount = 0.9, message = "Done!")}
+      incProgress(amount = 0.9,
+                  message = "Done!")}
     
     else  {  
       # Create unique pool of names to identify (Save computation time)
@@ -92,20 +100,33 @@ getSnames <- function(path, jSciNames = F, taxLevel, database ){
       families2 <- families[,!(names(families) %in% out)]
       ret$namew <-NULL
       ret$namew <- families2
-      incProgress(amount = 0.5, message = "Done!")
+      incProgress(amount = 0.5, 
+                  
+                  message = "Done!"
+      )
       
+     
       ret$families <- families}
     
+    ret$mess = if(length(which(goodArt <= 0)!= 1)){
+      paste("Attention, no taxa found in", 
+            length(which(goodArt <= 0)), "file(s):",
+            "\n",
+            reshape2::melt(names[which(goodArt <= 0)]), 
+            "Please manually revise such file(s)")
+    } else { "All files were correctly mined"}
     
     return(ret)
   }) 
 } 
 
 
+
 ## FindSkipGrams and normalized probability between pair of words (option to filter with dictionary matches)
 
 findSkipGram = function(indexText, filter = T){
   test2 = as.tibble(indexText)
+  print(test2)
   names(test2) = "text"
   
   probsT2 = unigramProbs = test2 %>% 
@@ -124,10 +145,11 @@ findSkipGram = function(indexText, filter = T){
     unite(skipgramID, ngramID) %>%
     unnest_tokens(word, ngram) %>%
     anti_join(stop_words, by = "word")
-  
   # Calculate probabilities that pair of words occur together
   skipgram_probs <- tidy_skipgrams %>%
-    pairwise_count(word, skipgramID, diag = TRUE, sort = TRUE) %>%
+    pairwise_count(word, skipgramID, 
+                   diag = TRUE, 
+                   sort = TRUE) %>%
     mutate(p = n / sum(n))
   
   
@@ -144,7 +166,8 @@ findSkipGram = function(indexText, filter = T){
               by = "word2") %>%
     mutate(p_together = p / p1 / p2)
   
-  
+  print(normalized_prob)
+  print(which(normalized_prob$word1 == normalized_prob$word2))
   resWord = normalized_prob[-which(normalized_prob$word1 == normalized_prob$word2),]
   resWord = resWord[order(resWord$p_together, decreasing = T),]
   if (filter == T) {resWord = resWord = resWord[grep(regex,resWord$word1 ),]}
@@ -152,6 +175,49 @@ findSkipGram = function(indexText, filter = T){
   
   return(resWord)
 }
+
+
+# function to create coorcurrences 
+
+getCoOcu = function(x, dictio, filter = F){
+  
+
+  
+  stats <- cooccurrence(x = x$lemma, 
+                        relevant = x$upos %in% c("NOUN", "VERB","ADJ"), 
+                        skipgram = 8)
+
+if (filter == T) {
+  dictio = read.csv(dictio,
+                    header = TRUE, 
+                    stringsAsFactors = F)
+  
+  match1  = unlist(sapply(dictio$dictionary, 
+                          function(x)grep(x,stats$term1)))
+  match2 = unlist(sapply(dictio$dictionary, 
+                         function(x)grep(x,stats$term2)))
+  match = unique(c(match1, match2))
+  print(match2)
+  print(match)
+  stats = stats[match,]
+}
+else{stats = stats}
+
+  stats[order(stats$cooc,stats$term1, decreasing = T),]
+}
+
+getCoOcu2 = function(x){
+  stats <- cooccurrence(x = x$lemma, 
+                        relevant = x$upos %in% c("NOUN", "VERB","ADJ"),
+                        skipgram = 3)
+
+  stats[order(stats$cooc,stats$term1, decreasing = T),]
+}
+
+# Function to filter datatables based on a dictionary of terms
+ 
+
+
 
 
 # Funtion to index text content in a loop and create corpus 
@@ -199,6 +265,26 @@ giveContext2 <- function(text,skipGram, up, down) {
   word1 = skipGram$word1
   names(cont) <- names(text) 
   return(cont[grep(word1, cont)])}
+
+
+makeTextNetwork = function(words){
+  # Create labels from dataframe
+  labels = c(unique(as.character(words$w1)),
+             unique(as.character(words$w2)))
+  # Create nodes from dataframe
+  nodes = data.frame("label" = labels , 
+                     "id" = 1:length(labels))
+  
+  # Create edges (interactions) by matching the dataframe with the nodelist
+  edges = data.frame("from" = match(words$w1, labels),
+                     "to" = match(words$w2, labels),
+                     "width" = words$fre)
+  # Make network object
+  netDat = list("nodes" = nodes,
+                "edges" = edges)
+  return(netDat)
+  
+}
 
 
 
