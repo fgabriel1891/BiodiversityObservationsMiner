@@ -1,0 +1,3 @@
+# Find Biodiversity Observations by word-pair combinations
+
+> Explore co-occurrences of taxonomic entities with dictionary terms in the text one article at a time. Clicking on **Find Word Associations**  will index text and applies the skip-n-gram model to find word pairs and their normalized probabilities of association. You filter word pairs matching only the dictionary terms. Finally, clicking the table will render the corresponding snippet of text containing the selected word association in the second box. 

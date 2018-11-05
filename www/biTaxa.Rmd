@@ -1,0 +1,3 @@
+#  Use taxonomy to find Biodiversity Observations
+
+> The list of taxonomic entities recognized in the text is provided as a clickable data table, rendered inside the first box. Selecting items from this table will render another data table containing the snippets of text of the corpus corresponding to the selected taxonomic entity. Taxonomic entities could range from scientific names to mentions of higher taxa.

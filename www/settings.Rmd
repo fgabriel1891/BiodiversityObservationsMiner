@@ -1,0 +1,21 @@
+# Settings:
+
+*Before you start!*
+
+- Files must be in PDF format
+                                         
+- It is recomended to name your files appropiately (e.g. SomeAuthor_et_al_2018.pdf)
+
+- Scanned versions of articles are not yet accepted (i.e. PDF of an image)
+
+> This tab will render a series of boxes with widgets to upload PDF files from a local drive. It will also provide different options to connect to both the Global Names Architecture (GNA) and the National Center for Biotechnology Information (NCBI) APIs via *taxize*.  In addition, you can filter the results based on available biodiversity dictionaries. 
+
+------
+
+*Important note if you are using the online version:*
+
+My server is limited, so to avoid issues caused by uploading large pdf files a total file size limitation of 30Mb applies. However, if needed (e.g. to mine a very large corpus) this limitation can be changed by modifying the source code, either by changing line 27 of the server.R file. In that case is better to use the application locally, downloading it from GitHub. 
+
+
+
+------
