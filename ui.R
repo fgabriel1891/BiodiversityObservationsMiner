@@ -12,6 +12,23 @@ library(shiny)
 library(shinythemes)
 library(shinydashboard)
 
+## 
+
+# Inputs: 
+#   file1: fileInput widget, accepts one or more files with a .pdf extension
+# SnamesOnly: checkboxInput widget, logical operator. 
+# If its value equals to FALSE, it will render a conditional input to give more options to the user (conditionalInput, conditionalInput2).
+# GoButton: actionButton widget, render as the "Get Taxa" button.
+# up: sliderInput widget, ranges from 0-500. Sets the value for the number of characters up the matching position
+# down: sliderInput widget ranges from 0-500. Sets the value for the number of characters down the matching position
+# dictionary: selectInput widget, display a dropdown list of biodiversity dictionaries available
+# indexButton: actionButton widget, renders the "Index" button. Triggers Index events based on the biodiversity dictionaries
+# skGram: actionButton: actionButton widget, renders the "Find Word Associations" button. Triggers skipGram associations related functions.
+# up2: same as up.
+# down2: same as down.
+# checkbox: checkboxInput widget, logical argument. 
+# This controls whether the output of the skipGram matches will show only matches with the dictionary terms (TRUE/FALSE).
+
 ### Set color and similar paramenters
 
 skin = "black" # Skin of dashboard 
@@ -19,25 +36,33 @@ title = "Biodiversity Observations Miner v.1.0" # Title of APP
 twidth = 400 # width of dashboard title 
 width = 300 # width of dashboard
 
-# Set paths of files
+# Set paths for dictionary files
 dictionary.path <- "dic/"
 filenames.dic<-list.files(dictionary.path)
-path2 <- paste("dic","/", filenames.dic, sep = "")
+path2 <- paste("dic","/", 
+               filenames.dic, 
+               sep = "")
 names(path2) <- filenames.dic
+
+
 
 ## Build the UI
 shinyUI(
   dashboardPage(skin = skin, 
                 dashboardHeader( title = title, 
-                                 titleWidth = 300
-                                 ),
+                                 titleWidth = 300,
+                                 dropdownMenu(type = "notifications",
+                                              notificationItem(
+                                                text = textOutput("attention"),
+                                                icon("warning"))
+                                 )),
                 dashboardSidebar(width = width,
                                  sidebarMenu(
                                    p(),
                                    menuItem( text = "Home",
                                             tabName = "Instr",
                                             icon = icon("home")),
-                                   menuItem( text = "Settings",
+                                   menuItem( text = "Upload",
                                              tabName = "Set",
                                              icon = icon("floppy-open", lib = "glyphicon")
                                              ),
@@ -47,7 +72,7 @@ shinyUI(
                                    menuSubItem( text = "by taxa",
                                              tabName = "ScienNames",
                                              icon = icon("envira")),
-                                   menuSubItem( text = "with Biodiversity dictionaries",
+                                   menuSubItem( text = "by keywords",
                                              tabName = "Events",
                                              icon = icon("puzzle-piece"))),
                                    # menuItem( text = "Mine by Geographical Locations",
@@ -71,107 +96,128 @@ shinyUI(
                                              icon = icon("id-card"))
                                  )),
                 dashboardBody( 
-                  tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
+                  tags$link(rel = "stylesheet", 
+                            type = "text/css",
+                            href = "custom.css"),
                   
                              
                              tabItems(
                                             
                                 tabItem("Instr", 
-                                        h1("Welcome to Biodiversity Observations Miner!"),
-                                        p(),
-                                        includeMarkdown("www/01-Instructions.Rmd"),
-                                        p("This shiny app is currently on development and under the CreativeCommons CC BY-NC-SA License.")
-                                        ),
+                                       includeMarkdown("www/01-Instructions.Rmd")),
+                                    
                                tabItem("Set",
                                        fluidPage(
-                                         h2("Settings tab"),p(),
-                                         h4("Follow the necessary steps inside the boxes before heading to the next tab"),
-                                         box(title = "1: Upload you article(s) to mine",
-                                             width = 12 ,status = "success", solidHeader = TRUE,
+                                         includeMarkdown("settings.Rmd"),
+                                        br(),br(),
+                                         box(title = "Upload you article(s) to mine",
+                                             width = 12 ,status = "success", 
+                                             solidHeader = TRUE,
                                               fileInput('file1', 'Upload your article(s) here',
-                                                   accept=c('.pdf'), multiple = T,
-                                                   placeholder = "No file(s) selected"),
-                                             fluidPage(
-                                               h4("Important!"),
-                                               h5("Files must be in PDF format"), 
-                                               p( "It is recomended to name your files appropiately"),
-                                               p( "(e.g. SomeAuthor_et_al_2018.pdf)"),
-                                               h5("Scanned versions of articles are not yet accepted "))),
-                                       box(title = "2: Select taxonomic resolution", status = "warning", 
-                                           collapsible = T,width = 12,collapsed = T,
-                                           p("Selecting many options to resolve taxonomically will result in longer computational times, please be patient. 
-                                             (specially when your corpus contain a large and diverse collection of scientific names "),
-                                           p("When you are done, click on the Button at the bottom of the box"),
-                                           h5(tags$b("Identify species until:")),
-                                           checkboxInput("SnamesOnly", "Scientific names Only", value = FALSE, width = NULL),
-                                           uiOutput("conditionalInput"),
-                                           uiOutput("conditionalInput2"),
-                                           actionButton(inputId = "GoButton", label = tags$b("Get Taxa"),icon("mouse-pointer"), 
-                                                        style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
-                                       box(title = "3: Select a biodiversity dictionary", width = 12, collapsible = T,collapsed = T,
-                                           status = "warning",
-                                           selectInput(inputId = "dictionary",
-                                                       label = "From the dropdown list",
-                                                       path2),
-                                           p("When you are done, click on the Button at the bottom of the box"),
-                                           actionButton("indexButton", label = tags$b("Index"),icon("mouse-pointer"), 
-                                                        style="color: #fff; background-color: #337ab7; border-color: #2e6da4")))),
+                                                   accept=c('.pdf'),
+                                                   multiple = T,
+                                                   placeholder = "No file(s) selected"))
+                                         )),
                                tabItem("ScienNames",
                                        fluidPage(
-                                         h2("Use the taxa found in the text to find biodiversity observations"), 
+                                         includeMarkdown("biTaxa.Rmd"),
                                          HTML("<br><br><br>"),
                                          column(5,
                                          fluidRow(
-                                         box( title = "Select a taxa",collapsible = T,
-                                              width = 12,status = "warning",
+                                           box(title = "1: Select taxonomic resolution", 
+                                               status = "warning", 
+                                               collapsible = T,
+                                               width = 12, 
+                                               collapsed = F,
+                                               p("Selecting many options to resolve taxonomically will result in longer computational times, please be patient. 
+                                                 (specially when your corpus contain a large and diverse collection of scientific names "),
+                                               p("When you are done, click on the Button at the bottom of the box"),
+                                               h5(tags$b("Identify species until:")),
+                                               checkboxInput("SnamesOnly", "Scientific names Only",
+                                                             value = FALSE, 
+                                                             width = NULL),
+                                               uiOutput("conditionalInput"),
+                                               uiOutput("conditionalInput2"),
+                                               actionButton(inputId = "GoButton",
+                                                            label = tags$b("Get Taxa"),
+                                                            icon("mouse-pointer"), 
+                                                            style="color: #fff; background-color: #337ab7; 
+                                                            border-color: #2e6da4")),
+                                         box( title = "2: Select a taxa",
+                                              collapsible = T,
+                                              width = 12, 
+                                              status = "warning",
                                               p("The following table contains the taxonomic entities recognize in the corpus text.
                                                 Taxonomic entities are found with the Global Names Recognition and Discovery tool"),
-                                              p("Set context limits:"),
-                                              p("Lenght in characters left and right from the indexed positions"),
-                                              column(5,
-                                                     sliderInput("up", "Left:", min = 0, max = 500,
-                                                                 value = 100, step= 10)),
-                                              column(5,
-                                                     sliderInput("down", "Right:", min = 0, max = 500, 
-                                                                 value = 100, step= 10)),
-                                              DT::dataTableOutput("data_table", width = "90%")))),
+                                              p("Once the annotation is finished, click on individual species names to reveal species-specific content"),
+                                              DT::dataTableOutput("data_table", width = "90%")),
+                                         box(width = 12,
+                                             textOutput("attention2"))
+                                         )),
                                        column(7,
-                                       box(title = "Text snippets",collapsible = T, width = 12,solidHeader = T, 
+                                              box( title = "3: Render context",
+                                                   collapsible = T,
+                                                   width = 12, 
+                                                   status = "warning",
+                                                   actionButton(inputId = "SkGram2",
+                                                                label = tags$b("Infer context"),
+                                                                icon("mouse-pointer"), 
+                                                                style="color: #fff;
+                                                                background-color: #337ab7; 
+                                                                border-color: #2e6da4"),
+                                                   DT::dataTableOutput("contextTableSp",
+                                                                       width = "90%")),
+                                       box(title = "Text snippets",
+                                           collapsible = T, 
+                                           width = 12,
+                                           solidHeader = T, 
                                            status = "danger",
-                                          
-                                         DT::dataTableOutput("context"))))),
+                                           DT::dataTableOutput("context")))
+                                       
+                                       )),
                                tabItem("Events",
                                        fluidPage(
-                                         h2("Find data linked to a particular biodiversity event"),
+                                        includeMarkdown("byBioDic.Rmd"),
                                          HTML("<br><br><br>"),
-                                       column(5,
-                                              box( title = "Content discovery",collapsible = T,
-                                                   width = 12,status = "warning",
-                                         
-                                          uiOutput("names2"),
-                                        checkboxInput("checkbox", 
-                                                      label = "Filter by dictionary terms?",
-                                                      value = TRUE),
-                                        actionButton("SkGram", 
-                                                     label = tags$b("Find Word Associations"),
-                                                     icon("mouse-pointer"), 
-                                                               style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                                         h5(tags$b("Set context limit")),
-                                         p("Lenght in characters left and right from the indexed positions"),
-                                         column(5,
-                                                sliderInput("up2", "Left:", min = 0, max = 500,
-                                                            value = 100, step= 10)),
-                                         column(5,
-                                                sliderInput("down2", "Right:", min = 0, max = 500, 
-                                                            value = 100, step= 10)),
-                                         DT::dataTableOutput("skipGram",width = "90%"))),
+                                        column(5,
+                                        box( title = "Content discovery", 
+                                             collapsible = T,
+                                             width = 12, status = "warning",
+                                             checkboxInput("byDic", 
+                                                           "Use a biodiversity dictionary to filter results (optional)", 
+                                                           value = F),
+                                            uiOutput("byDic2"),
+                                             actionButton("SkGram", 
+                                                          label = tags$b("Find Word Associations"),
+                                                          icon("mouse-pointer"), 
+                                                          style="color: #fff; 
+                                                          background-color: #337ab7;
+                                                          border-color: #2e6da4"),
+                                             br(),
+                                            br(),
+                                            #uiOutput("filterBut"),
+                                             DT::dataTableOutput("skipGram"))),
                                        column(7,
-                                         box(title = "Text snippets", collapsible = T, 
-                                             width = 12, collapsed = F,
-                                             status = "danger",
-                                             solidHeader = T,
-                                             DT::dataTableOutput("context2", width = "90%")
-                                         )))),
+                                              box(title = "Text snippets", 
+                                                  collapsible = T, 
+                                                  width = 12, 
+                                                  collapsed = F,
+                                                  status = "danger",
+                                                  solidHeader = T,
+                                                  DT::dataTableOutput("context2", width = "90%")
+                                              ))
+                                       
+                                       )),
+                               
+                               # box(title = "3: Select a biodiversity dictionary", width = 12, collapsible = T,collapsed = T,
+                               #     status = "warning",
+                               #     selectInput(inputId = "dictionary",
+                               #                 label = "From the dropdown list",
+                               #                 path2),
+                               #     p("When you are done, click on the Button at the bottom of the box"),
+                               #     actionButton("indexButton", label = tags$b("Index"),icon("mouse-pointer"), 
+                               #                  style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
+                               
                                        # fluidRow(
                                        #   tabBox(title = "Plots",
                                        #          # The id lets us use input$tabset1 on the server to find the current tab
@@ -204,7 +250,8 @@ shinyUI(
                                          ))),
                                tabItem("contact",
                                        fluidPage(
-                                         h3("BOM was written  by: Gabriel Muñoz"),
+                                         h2("Here there is available contact information for all authors of Biodiversity Observations Miner."),
+                                         h4("BOM interface was written  by: Gabriel Muñoz"),
                                          h5("GitHub"),
                                          a(shiny::icon('github fa-2x'),href='https://github.com/fgabriel1891/',target='_blank'),
                                          br(),
@@ -213,7 +260,7 @@ shinyUI(
                                          br(),
                                          h5("Personal Page"),
                                          a(shiny::icon('user fa-2x'),href='https://sites.google.com/view/fgabriel1891',target='_blank'),
-                                         HTML("<br><br/><br><br/>"),
+                                         HTML("<br><br/>"),
                                          h3("Guidance, comments and input by:"),
                                          h4(a("W.Daniel Kissling"), href = "https://www.danielkissling.de/", target = "_blank"),
                                          h4(a("Emiel van Loon"), href = "https://staff.fnwi.uva.nl/e.e.vanloon/", target = "_blank")
