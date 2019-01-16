@@ -120,7 +120,7 @@ shinyUI(
                                          )),
                                tabItem("ScienNames",
                                        fluidPage(
-                                         includeMarkdown("biTaxa.Rmd"),
+                                         includeMarkdown("www/biTaxa.Rmd"),
                                          HTML("<br><br><br>"),
                                          column(5,
                                          fluidRow(
@@ -177,7 +177,7 @@ shinyUI(
                                        )),
                                tabItem("Events",
                                        fluidPage(
-                                        includeMarkdown("byBioDic.Rmd"),
+                                        includeMarkdown("www/byBioDic.Rmd"),
                                          HTML("<br><br><br>"),
                                         column(5,
                                         box( title = "Content discovery", 
