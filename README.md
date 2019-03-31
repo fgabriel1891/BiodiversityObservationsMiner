@@ -54,6 +54,7 @@ The idea to develop this web application is set in the context of increasing the
 
 - [shiny](https://shiny.rstudio.com/)
 - [shinydashboard](https://rstudio.github.io/shinydashboard)
+- [shinythemes](https://rstudio.github.io/shinythemes/)
 - [stringi](http://www.gagolewski.com/software/stringi/)
 - [stringr](http://stringr.tidyverse.org/)
 - [taxize](https://ropensci.github.io/taxize-book/)
@@ -63,6 +64,7 @@ The idea to develop this web application is set in the context of increasing the
 - [widyr](https://github.com/dgrtwo/widyr)
 - [fulltext](https://ropensci.org/tutorials/fulltext_tutorial/)
 - [tm](http://tm.r-forge.r-project.org/)
+- [udpipe](https://github.com/bnosac/udpipe)
 - [DT](https://rstudio.github.io/DT/)
 
 --------
