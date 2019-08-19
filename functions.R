@@ -1,18 +1,13 @@
-
-
-# Define functions: 
+#
+# Biodiversity Observations Miner. 
+# Gabriel Munoz 
+# fgabriel1891@gmail.com / gabriel.munoz@concordia.ca
+# Define custom functions: 
 #
 
 #
 # Custom function to index
-#
 
-#return( print(IndexText[which(matches[[i]] == TRUE)]))
-# 
-# test <- scrapenames(file = "www/Frugivory and seed dispersal by tapirs: an insight on their ecological role .pdf", return_content = T)
-# txt <- test$meta$content
-# vr <- test$data
-# Index(txt,vr, dictionary)
 
 Index <- function(read,verbatim, dictionary) {
   
@@ -38,7 +33,7 @@ Index <- function(read,verbatim, dictionary) {
   return(df)
 }
 
-# Function to index the ocr text and give context. 
+# Function to index the ocr text and give context, i.e. the sourrounding text from the species name location
 
 giveContext <- function(text,terms, up, down) {
   indx <- unlist(gregexpr(terms, text))
@@ -217,9 +212,6 @@ getCoOcu2 = function(x){
 # Function to filter datatables based on a dictionary of terms
  
 
-
-
-
 # Funtion to index text content in a loop and create corpus 
 
 corpusIndexText = function(names, regex){
@@ -288,10 +280,6 @@ makeTextNetwork = function(words){
 
 
 
-
-## End of functions 
-
-
 getBackText = function(rows, text, skipGram){
   rows = as.numeric(rows)
   word2 = grep(skipGram$word2[rows], text)
@@ -316,7 +304,6 @@ termcount <- function(dictionary, text){
   
 }
 
-# Function to create a cropus from the indexed snippets
 
 wordcloudChunk <- function( chunks){ 
   
@@ -330,11 +317,6 @@ wordcloudChunk <- function( chunks){
   #freq <- data.frame("terms"=names(freq), "freq"=freq)
   return(corpus)
 }
-
-
-#getSnames(path = "www/eiserhardt2011.pdf")
-#sasa <- getSnames(c("02 David, Manakadan & Ganesh.pdf","1-s2.0-S037663571500056X-main.pdf"))
-
 
 
 # Function to split text based on positions                    
@@ -377,46 +359,41 @@ getFrecuencyNames <-  function(namelist){
   splist$class <- namelist$class[match(splist$species, namelist$species)]
   return(splist)
 }
+# 
+# # Scrape locations with monkeylearn 
+# 
+# locScrap <- function(article, key){
+#   print("starting")
+#   withProgress( value = 0.5 , message = "Scrapping Locations", { 
+#     scrap <- list()        
+#     scrap <- monkeylearn::monkeylearn_extract(article,
+#                                               extractor_id = "ex_isnnZRbS", 
+#                                               key=key, verbose = T)
+#     print(scrap)
+#     locs <- scrap$found[scrap$found$tag == "LOCATION"]
+#     return(scrap)})
+#   
+# }
+# 
+# # Get the Key imput 
+# 
+# key <- eventReactive(input$submit,{ 
+#   df <- input$ApiButton
+#   df
+# })
+# 
+# 
+# ## Function to read locations
+# 
+# 
+# readLocs <- function(txt, locs, len){
+#   rre <- lapply(locs,function(x) unlist(gregexpr(x, txt)))
+#   len <- len
+#   lapply(rre, function(x) ifelse( x > len, stringr::str_sub(txt,x-len,x+len),
+#                                   stringr::str_sub(txt,x,x+len )))
+#   
+# }
 
-# Scrape locations with monkeylearn 
-
-locScrap <- function(article, key){
-  print("starting")
-  withProgress( value = 0.5 , message = "Scrapping Locations", { 
-    scrap <- list()        
-    scrap <- monkeylearn::monkeylearn_extract(article,
-                                              extractor_id = "ex_isnnZRbS", 
-                                              key=key, verbose = T)
-    print(scrap)
-    locs <- scrap$found[scrap$found$tag == "LOCATION"]
-    return(scrap)})
-  
-}
-
-# Get the Key imput 
-
-key <- eventReactive(input$submit,{ 
-  df <- input$ApiButton
-  df
-})
-
-
-## Function to read locations
-
-
-readLocs <- function(txt, locs, len){
-  rre <- lapply(locs,function(x) unlist(gregexpr(x, txt)))
-  len <- len
-  lapply(rre, function(x) ifelse( x > len, stringr::str_sub(txt,x-len,x+len),
-                                  stringr::str_sub(txt,x,x+len )))
-  
-}
-
-
-sasa = c("asvssffggerasmss")
-
-gregexpr("ms",sasa[])
-unlist(gregexpr("as", sasa))
 
 
 # 
