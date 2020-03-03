@@ -15,12 +15,6 @@ A web application to unlock primary biodiversity data from published literat
 
 ## Running the application 
 
-### On my personal server: 
-
-Use this [link](https://fgabriel1891.shinyapps.io/biodiversityobservationsminer/) to run the application online  **(free)**
-
-It also runs in almost any other device with internet access (e.g. Tablets).  
-
 ### To run locally on your computer:  
  
  1.- Fork or download the repository to a directory on your computer
