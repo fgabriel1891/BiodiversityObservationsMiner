@@ -31,10 +31,6 @@ A web application to unlock primary biodiversity data from published literat
 *Important!* 
  Before using Biodiversity Observations Miner locally we recommend to have [R](https://www.r-project.org/) and [Rstudio](https://www.rstudio.com/) installed and up to date. 
 
-**Consider this before using the app in the server or locally**
-
->  For the moment I only have a Starter Shiny server account. This limits the app to a couple of running hours / users per month. Until I solve this issue (either financing a [pro](https://www.rstudio.com/products/shiny-server-pro/) server, or deploying my own (however, this will take me to do some more time)  please consider using the current server as a testing ground for the app functionalities. If you want to mine a considerable number of literature files please run the app locally at your computer. 
-
 
 For comments, suggestions and bugs please open an [issue](https://github.com/fgabriel1891/BiodiversityObservationsMiner/issues/new)
 
